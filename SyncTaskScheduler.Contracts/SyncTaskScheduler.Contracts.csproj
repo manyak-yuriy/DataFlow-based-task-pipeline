@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{155F6101-5C5F-4DDC-83BA-8399E2BAF37D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>SyncTaskScheduler.Console</RootNamespace>
-    <AssemblyName>SyncTaskScheduler.Console</AssemblyName>
+    <ProjectGuid>{308D1418-9B59-4222-A58B-463271EC6797}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SyncTaskScheduler.Contracts</RootNamespace>
+    <AssemblyName>SyncTaskScheduler.Contracts</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -42,21 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ITask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SyncTaskScheduler.Contracts\SyncTaskScheduler.Contracts.csproj">
-      <Project>{308d1418-9b59-4222-a58b-463271ec6797}</Project>
-      <Name>SyncTaskScheduler.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyncTaskScheduler.Implementation\SyncTaskScheduler.Implementation.csproj">
-      <Project>{cdcb88ad-1ed4-44a8-8574-eba0f24c5e7f}</Project>
-      <Name>SyncTaskScheduler.Implementation</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

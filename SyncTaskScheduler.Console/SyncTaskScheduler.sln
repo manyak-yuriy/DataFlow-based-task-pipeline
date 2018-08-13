@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.Console",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.Implementation", "..\SyncTaskScheduler.Implementation\SyncTaskScheduler.Implementation.csproj", "{CDCB88AD-1ED4-44A8-8574-EBA0F24C5E7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.Contracts", "..\SyncTaskScheduler.Contracts\SyncTaskScheduler.Contracts.csproj", "{308D1418-9B59-4222-A58B-463271EC6797}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CDCB88AD-1ED4-44A8-8574-EBA0F24C5E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDCB88AD-1ED4-44A8-8574-EBA0F24C5E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDCB88AD-1ED4-44A8-8574-EBA0F24C5E7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{308D1418-9B59-4222-A58B-463271EC6797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{308D1418-9B59-4222-A58B-463271EC6797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{308D1418-9B59-4222-A58B-463271EC6797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{308D1418-9B59-4222-A58B-463271EC6797}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

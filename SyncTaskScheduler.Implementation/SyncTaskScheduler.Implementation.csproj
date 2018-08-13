@@ -40,8 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SyncTaskScheduler.cs" />
+    <Compile Include="DelegateBasedTask.cs" />
+    <Compile Include="TaskPipeLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SyncTaskScheduler.Contracts\SyncTaskScheduler.Contracts.csproj">
+      <Project>{308d1418-9b59-4222-a58b-463271ec6797}</Project>
+      <Name>SyncTaskScheduler.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
