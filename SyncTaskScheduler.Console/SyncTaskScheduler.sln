@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.Console", "SyncTaskScheduler.Console.csproj", "{155F6101-5C5F-4DDC-83BA-8399E2BAF37D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.ConsoleApp", "SyncTaskScheduler.ConsoleApp.csproj", "{155F6101-5C5F-4DDC-83BA-8399E2BAF37D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncTaskScheduler.Implementation", "..\SyncTaskScheduler.Implementation\SyncTaskScheduler.Implementation.csproj", "{CDCB88AD-1ED4-44A8-8574-EBA0F24C5E7F}"
 EndProject

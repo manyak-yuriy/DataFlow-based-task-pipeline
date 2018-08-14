@@ -43,9 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateBasedTask.cs" />
-    <Compile Include="TaskPipeLine.cs" />
+    <Compile Include="PipeLine\Events\PipeLineEventsProvider.cs" />
+    <Compile Include="Tasks\ActionBasedTask.cs" />
+    <Compile Include="Tasks\FuncBasedTask.cs" />
+    <Compile Include="PipeLine\ProducerConsumerPipeLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\ParameterlessTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SyncTaskScheduler.Contracts\SyncTaskScheduler.Contracts.csproj">

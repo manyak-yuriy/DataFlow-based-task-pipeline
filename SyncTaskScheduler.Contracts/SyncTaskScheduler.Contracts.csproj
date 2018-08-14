@@ -43,7 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITask.cs" />
+    <Compile Include="PipeLine\Events\IPipeLineEventsSubscriber.cs" />
+    <Compile Include="PipeLine\Events\IPipeLineEventsPublisher.cs" />
+    <Compile Include="PipeLine\Events\NewElementAvailableEventArgs.cs" />
+    <Compile Include="PipeLine\IPipeLine.cs" />
+    <Compile Include="Tasks\ITask.cs" />
+    <Compile Include="PipeLine\IPipeLineConsumer.cs" />
+    <Compile Include="PipeLine\IPipeLineProducer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
