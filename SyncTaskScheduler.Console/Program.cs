@@ -24,7 +24,7 @@ namespace SyncTaskScheduler.ConsoleApp
             Console.CancelKeyPress += (o, e) =>
             {
                 e.Cancel = true;
-                pipeLine.StopProcessing();
+                pipeLine.CompleteProducing();
             };
             
             var executeTasks = ExecuteTasksOneByOne(pipeLine, pipeLineEventsProvider);

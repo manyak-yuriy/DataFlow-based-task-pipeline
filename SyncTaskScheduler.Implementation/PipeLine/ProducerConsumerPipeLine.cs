@@ -37,16 +37,21 @@ namespace SyncTaskScheduler.Implementation.PipeLine
             _bufferBlock.LinkTo(_actionBlock, linkOptions);
         }
 
-        public void StopProcessing()
+        public void CompleteProducing()
         {
             _bufferBlock.Complete();
         }
 
         public Task PipeLineCompletion => _actionBlock.Completion;
 
-        public async Task EnqueueAsync(TPipeLineItem item)
+        public async Task<bool> EnqueueAsync(TPipeLineItem item)
         {
-            await _bufferBlock.SendAsync(item);
+            return await _bufferBlock.SendAsync(item);
+        }
+
+        public bool Enqueue(TPipeLineItem item)
+        {
+            return _bufferBlock.Post(item);
         }
     }
 }
