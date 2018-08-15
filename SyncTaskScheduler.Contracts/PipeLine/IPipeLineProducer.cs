@@ -1,7 +1,9 @@
-﻿namespace SyncTaskScheduler.Contracts.PipeLine
+﻿using System.Threading.Tasks;
+
+namespace SyncTaskScheduler.Contracts.PipeLine
 {
-    public interface IPipeLineProducer<in TPipeLineElement> : IPipeLine
+    public interface IPipeLineProducer<in TPipeLineItem> : IPipeLine
     {
-        void EnQueue(TPipeLineElement element);
+        Task EnqueueAsync(TPipeLineItem item);
     }
 }

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PipeLine\Events\PipeLineEventsProvider.cs" />
+    <Compile Include="PipeLine\PipeLineTaskConsumer.cs" />
     <Compile Include="Tasks\ActionBasedTask.cs" />
     <Compile Include="Tasks\FuncBasedTask.cs" />
     <Compile Include="PipeLine\ProducerConsumerPipeLine.cs" />

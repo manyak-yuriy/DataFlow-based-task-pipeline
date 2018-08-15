@@ -1,46 +1,52 @@
-﻿using System;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
 using SyncTaskScheduler.Contracts.PipeLine;
-using SyncTaskScheduler.Contracts.PipeLine.Events;
 using System.Threading.Tasks;
 
 namespace SyncTaskScheduler.Implementation.PipeLine
 {
-    public class ProducerConsumerPipeLine<TPipeLineElement> : IPipeLineConsumer, IPipeLineProducer<TPipeLineElement>
+    public class ProducerConsumerPipeLine<TPipeLineItem> : IPipeLineProducer<TPipeLineItem>
     {
-        private readonly IPipeLineEventsPublisher<TPipeLineElement> _pipeLineEventsPublisher;
-        private readonly BufferBlock<TPipeLineElement> _buffer;
+        private readonly IPipeLineConsumer<TPipeLineItem> _pipeLineConsumer;
 
-        public ProducerConsumerPipeLine(IPipeLineEventsPublisher<TPipeLineElement> pipeLineEventsPublisher, int maximumCapacity)
+        private readonly BufferBlock<TPipeLineItem> _bufferBlock;
+        private readonly ActionBlock<TPipeLineItem> _actionBlock;
+
+        public ProducerConsumerPipeLine(IPipeLineConsumer<TPipeLineItem> pipeLineConsumer, int maximumCapacity)
         {
-            _pipeLineEventsPublisher = pipeLineEventsPublisher;
+            _pipeLineConsumer = pipeLineConsumer;
 
-            _buffer = new BufferBlock<TPipeLineElement>(new DataflowBlockOptions()
+            _bufferBlock = new BufferBlock<TPipeLineItem>(new DataflowBlockOptions
             {
                 BoundedCapacity = maximumCapacity
             });
-        }
 
-        public async Task StartConsumeElementsAsync()
-        {
-            while (await _buffer.OutputAvailableAsync())
+            _actionBlock = new ActionBlock<TPipeLineItem>(
+                (element) => _pipeLineConsumer.Consume(element),
+                new ExecutionDataflowBlockOptions()
+                {
+                    BoundedCapacity = 1,
+                    // This is set explicitly to 1 in order to make the consumer process items one at a time.
+                    MaxDegreeOfParallelism = 1
+                });
+
+            var linkOptions = new DataflowLinkOptions
             {
-                var element = _buffer.Receive();
+                PropagateCompletion = true
+            };
 
-                _pipeLineEventsPublisher.OnNewElementAvailable(this, element);
-            }
-
-            _pipeLineEventsPublisher.OnPipeLineStopped();
+            _bufferBlock.LinkTo(_actionBlock, linkOptions);
         }
 
-        public void StopPipeLine()
+        public void StopProcessing()
         {
-            _buffer.Complete();
+            _bufferBlock.Complete();
         }
 
-        public void EnQueue(TPipeLineElement element)
+        public Task PipeLineCompletion => _actionBlock.Completion;
+
+        public async Task EnqueueAsync(TPipeLineItem item)
         {
-            _buffer.Post(element);
+            await _bufferBlock.SendAsync(item);
         }
     }
 }

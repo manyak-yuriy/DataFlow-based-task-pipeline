@@ -14,17 +14,17 @@ namespace SyncTaskScheduler.ConsoleApp
 {
     class Program
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static ILogger _logger = LogManager.GetCurrentClassLogger();
 
         static void Main(string[] args)
         {
-            var pipeLineEventsProvider = new PipeLineEventsProvider<ActionBasedTask<int>>();
-            var pipeLine = new ProducerConsumerPipeLine<ActionBasedTask<int>>(pipeLineEventsProvider, 10);
+            var taskConsumer = new PipeLineTaskConsumer();
+            var pipeLine = new ProducerConsumerPipeLine<ActionBasedTask<int>>(taskConsumer, 10);
 
             Console.CancelKeyPress += (o, e) =>
             {
                 e.Cancel = true;
-                pipeLine.StopPipeLine();
+                pipeLine.StopProcessing();
             };
             
             var executeTasks = ExecuteTasksOneByOne(pipeLine, pipeLineEventsProvider);
@@ -43,7 +43,7 @@ namespace SyncTaskScheduler.ConsoleApp
 
                 var task = Task.Factory.StartNew(() =>
                 {
-                    pipeLineProducer.EnQueue(new ActionBasedTask<int>((int timeToSleepInSec) =>
+                    pipeLineProducer.EnqueueAsync(new ActionBasedTask<int>((int timeToSleepInSec) =>
                     {
                         Console.WriteLine("Start sleeping for {0} seconds", timeToSleepInSec);
                         Thread.Sleep(1000 * timeToSleepInSec);

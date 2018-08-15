@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SyncTaskScheduler.Contracts.PipeLine
 {
-    public interface IPipeLineConsumer : IPipeLine
+    public interface IPipeLineConsumer<in TPipeLineItem>
     {
-        Task StartConsumeElementsAsync();
+        void Consume(TPipeLineItem element);
     }
 }

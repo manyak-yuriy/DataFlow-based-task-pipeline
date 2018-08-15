@@ -8,6 +8,8 @@ namespace SyncTaskScheduler.Contracts.PipeLine
 {
     public interface IPipeLine
     {
-        void StopPipeLine();
+        void StopProcessing();
+
+        Task PipeLineCompletion { get; }
     }
 }
