@@ -1,5 +1,6 @@
 ﻿using System;
 using SyncTaskScheduler.Contracts;
+using SyncTaskScheduler.Contracts.EventHandling;
 using SyncTaskScheduler.Contracts.PipeLine;
 using SyncTaskScheduler.Contracts.PipeLine.Events;
 
@@ -15,7 +16,7 @@ namespace SyncTaskScheduler.Implementation.PipeLine.Events
             NewElementAvailable?.Invoke(consumedBy, new NewElementAvailableEventArgs<TPipeLineElement>(element));
         }
 
-        public void OnProductionStopped()
+        public void OnPipeLineStopped()
         {
             ProductionStopped?.Invoke();
         }

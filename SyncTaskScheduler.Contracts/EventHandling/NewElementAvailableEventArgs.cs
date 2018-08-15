@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SyncTaskScheduler.Contracts.PipeLine.Events
+namespace SyncTaskScheduler.Contracts.EventHandling
 {
     public class NewElementAvailableEventArgs<TPipeLineElement> : EventArgs
     {

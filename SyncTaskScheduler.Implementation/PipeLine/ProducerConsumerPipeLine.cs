@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks.Dataflow;
+﻿using System;
+using System.Threading.Tasks.Dataflow;
 using SyncTaskScheduler.Contracts.PipeLine;
 using SyncTaskScheduler.Contracts.PipeLine.Events;
 using System.Threading.Tasks;
@@ -8,14 +9,19 @@ namespace SyncTaskScheduler.Implementation.PipeLine
     public class ProducerConsumerPipeLine<TPipeLineElement> : IPipeLineConsumer, IPipeLineProducer<TPipeLineElement>
     {
         private readonly IPipeLineEventsPublisher<TPipeLineElement> _pipeLineEventsPublisher;
-        private readonly BufferBlock<TPipeLineElement> _buffer = new BufferBlock<TPipeLineElement>();
+        private readonly BufferBlock<TPipeLineElement> _buffer;
 
-        public ProducerConsumerPipeLine(IPipeLineEventsPublisher<TPipeLineElement> pipeLineEventsPublisher)
+        public ProducerConsumerPipeLine(IPipeLineEventsPublisher<TPipeLineElement> pipeLineEventsPublisher, int maximumCapacity)
         {
             _pipeLineEventsPublisher = pipeLineEventsPublisher;
+
+            _buffer = new BufferBlock<TPipeLineElement>(new DataflowBlockOptions()
+            {
+                BoundedCapacity = maximumCapacity
+            });
         }
 
-        public async Task StartConsumeElementsFromPipeLineAsync()
+        public async Task StartConsumeElementsAsync()
         {
             while (await _buffer.OutputAvailableAsync())
             {
@@ -24,7 +30,7 @@ namespace SyncTaskScheduler.Implementation.PipeLine
                 _pipeLineEventsPublisher.OnNewElementAvailable(this, element);
             }
 
-            _pipeLineEventsPublisher.OnProductionStopped();
+            _pipeLineEventsPublisher.OnPipeLineStopped();
         }
 
         public void StopPipeLine()

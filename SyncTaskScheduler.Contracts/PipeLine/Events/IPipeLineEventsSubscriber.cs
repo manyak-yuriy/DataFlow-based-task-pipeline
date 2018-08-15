@@ -1,4 +1,5 @@
 ﻿using System;
+using SyncTaskScheduler.Contracts.EventHandling;
 
 namespace SyncTaskScheduler.Contracts.PipeLine.Events
 {

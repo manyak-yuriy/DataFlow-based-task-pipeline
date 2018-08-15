@@ -4,6 +4,6 @@ namespace SyncTaskScheduler.Contracts.PipeLine
 {
     public interface IPipeLineConsumer : IPipeLine
     {
-        Task StartConsumeElementsFromPipeLineAsync();
+        Task StartConsumeElementsAsync();
     }
 }

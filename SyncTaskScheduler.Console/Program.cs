@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 using SyncTaskScheduler.Contracts.PipeLine;
 using SyncTaskScheduler.Contracts.PipeLine.Events;
 using SyncTaskScheduler.Implementation.PipeLine;
@@ -13,10 +14,12 @@ namespace SyncTaskScheduler.ConsoleApp
 {
     class Program
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
             var pipeLineEventsProvider = new PipeLineEventsProvider<ActionBasedTask<int>>();
-            var pipeLine = new ProducerConsumerPipeLine<ActionBasedTask<int>>(pipeLineEventsProvider);
+            var pipeLine = new ProducerConsumerPipeLine<ActionBasedTask<int>>(pipeLineEventsProvider, 10);
 
             Console.CancelKeyPress += (o, e) =>
             {
@@ -64,7 +67,7 @@ namespace SyncTaskScheduler.ConsoleApp
 
                 Console.WriteLine("Started consuming tasks");
 
-                pipeLineConsumer.StartConsumeElementsFromPipeLineAsync().Wait();
+                pipeLineConsumer.StartConsumeElementsAsync().Wait();
 
                 Console.WriteLine("Finished consuming tasks");
             });

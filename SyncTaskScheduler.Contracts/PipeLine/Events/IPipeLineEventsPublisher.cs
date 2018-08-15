@@ -4,6 +4,6 @@
     {
         void OnNewElementAvailable(IPipeLineProducer<TPipeLineElement> consumedBy, TPipeLineElement element);
 
-        void OnProductionStopped();
+        void OnPipeLineStopped();
     }
 }
