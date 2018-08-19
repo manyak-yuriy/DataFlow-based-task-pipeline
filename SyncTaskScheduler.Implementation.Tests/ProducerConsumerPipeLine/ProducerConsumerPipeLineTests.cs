@@ -5,11 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using SyncTaskScheduler.Contracts.PipeLine;
 using SyncTaskScheduler.Implementation.PipeLine;
 
-namespace SyncTaskScheduler.Implementation.Tests
+namespace SyncTaskScheduler.Implementation.Tests.ProducerConsumerPipeLine
 {
     // Producers: one or more threads pushing items to a queue-like pipeline.
     // Consumer: a single thread which takes the items from the pipeline and processes them one-by-one.
@@ -17,11 +16,12 @@ namespace SyncTaskScheduler.Implementation.Tests
     public class ProducerConsumerPipeLineTests
     {
         private Mock<IPipeLineConsumer<Action>> _consumerMock;
-        private ProducerConsumerPipeLine<Action> _pipeLine;
-        private const int MaximumPipelineCapacity = 3;
+
+        private static IEnumerable<object> CommonTestCaseSource
+            => ProducerConsumerPipeLineTestCasesProvider.CommonTestCaseSource();
 
         [SetUp]
-        public void Setup()
+        public void OneTimeSetup()
         {
             _consumerMock = new Mock<IPipeLineConsumer<Action>>();
 
@@ -31,18 +31,17 @@ namespace SyncTaskScheduler.Implementation.Tests
                 {
                     a.Invoke();
                 });
-
-            _pipeLine = new ProducerConsumerPipeLine<Action>(_consumerMock.Object, MaximumPipelineCapacity);
         }
 
         // Only one item at a time must be processed by the pipeline.
         [Test]
-        public void OneItemAtATimeIsProcessedByTheConsumer()
+        [TestCaseSource(nameof(CommonTestCaseSource))]
+        public void OneItemAtATimeIsProcessedByTheConsumer(int testActionDurationMs, int numberOfProducers, int maximumPipelineCapacity)
         {
-            const int testActionDurationMs = 500;
-
             int sharedCounter = 0;
             int sharedCounterMismatchNumber = 0;
+
+            var pipeLine = new ProducerConsumerPipeLine<Action>(_consumerMock.Object, maximumPipelineCapacity);
 
             // Increments the shared counter to 1 before performing a long-running task and decrements immediately after.
             Action testAction = () =>
@@ -59,37 +58,36 @@ namespace SyncTaskScheduler.Implementation.Tests
             };
 
             List<Task> producerTasks = new List<Task>();
-            const int numberOfProducers = 10;
 
             for (int producerCounter = 0; producerCounter < numberOfProducers; producerCounter++)
             {
-                var producer = Task.Run(async () => await _pipeLine.EnqueueAsync(testAction));
+                var producer = Task.Run(async () => await pipeLine.EnqueueAsync(testAction));
 
                 producerTasks.Add(producer);
             }
 
             Task.WaitAll(producerTasks.ToArray());
 
-            _pipeLine.CompleteProducing();
-            _pipeLine.PipeLineCompletion.Wait();
+            pipeLine.CompleteProducing();
+            pipeLine.PipeLineCompletion.Wait();
 
-            // If the actions were invoked on a one-at-a-time basis, there must be no mismathes.
+            // If the actions were invoked in a one-at-a-time fashion, there must be no mismathes.
             Assert.AreEqual(sharedCounterMismatchNumber, 0);
         }
 
         // Items must be processed by the consumer in the same order they were added by the producers.
         [Test]
-        public void ItemsAreProcessedInCorrectOrder()
+        [TestCaseSource(nameof(CommonTestCaseSource))]
+        public void ItemsAreProcessedInCorrectOrder(int testActionDurationMs, int numberOfProducers, int maximumPipelineCapacity)
         {
-            object pushOrderLocker = new object();
+            var pipeLine = new ProducerConsumerPipeLine<Action>(_consumerMock.Object, maximumPipelineCapacity);
 
-            const int testActionDurationMs = 500;
+            object pushOrderLocker = new object();
 
             BlockingCollection<int> testActionsPushOrder = new BlockingCollection<int>();
             BlockingCollection<int> testActionsInvocationOrder = new BlockingCollection<int>();
 
             List<Task> producerTasks = new List<Task>();
-            const int numberOfProducers = 10;
 
             for (int producerCounter = 0; producerCounter < numberOfProducers; producerCounter++)
             {
@@ -104,7 +102,7 @@ namespace SyncTaskScheduler.Implementation.Tests
                 {
                     lock (pushOrderLocker)
                     {
-                        _pipeLine.EnqueueAsync(testAction).Wait();
+                        pipeLine.EnqueueAsync(testAction).Wait();
                         testActionsPushOrder.Add(testActionId);
                     }
                 });
@@ -113,20 +111,21 @@ namespace SyncTaskScheduler.Implementation.Tests
             }
 
             Task.WaitAll(producerTasks.ToArray());
-            _pipeLine.CompleteProducing();
-            _pipeLine.PipeLineCompletion.Wait();
+            pipeLine.CompleteProducing();
+            pipeLine.PipeLineCompletion.Wait();
 
             _consumerMock.Verify(consumerMock => consumerMock.Consume(It.IsAny<Action>()), Times.Exactly(numberOfProducers));
             CollectionAssert.AreEqual(testActionsPushOrder, testActionsInvocationOrder);
         }
 
         // If the pipeline production completion is triggered and the completion is finished, every item should have been processed by this time
-        // IMPORTANT: if capacity bounding is used, this will give the expected result only if the items are pushed asynchronously,
-        // otherwise the sychronous method rejects the item immediately and it doesn't get a chance to be consumed.
+        // IMPORTANT: if capacity bounding is used, this will give the expected result only if the items are pushed asynchronously (which provided a support for postponing),
+        // otherwise the sychronous method rejects the item immediately and it doesn't get a chance to be consumed in a postponed manner.
         [Test]
-        public void AllItemsShouldBeProcessedBeforePipeLineCompletion()
+        [TestCaseSource(nameof(CommonTestCaseSource))]
+        public void AllItemsShouldBeProcessedBeforePipeLineCompletion(int testActionDurationMs, int numberOfProducers, int maximumPipelineCapacity)
         {
-            const int testActionDurationMs = 50;
+            var pipeLine = new ProducerConsumerPipeLine<Action>(_consumerMock.Object, maximumPipelineCapacity);
 
             // Dummy test action.
             Action testAction = () =>
@@ -135,18 +134,17 @@ namespace SyncTaskScheduler.Implementation.Tests
             };
 
             List<Task> producerTasks = new List<Task>();
-            const int numberOfProducers = 100;
 
             for (int producerCounter = 0; producerCounter < numberOfProducers; producerCounter++)
             {
-                var producer = Task.Run(() => _pipeLine.EnqueueAsync(testAction).Wait());
+                var producer = Task.Run(async () => await pipeLine.EnqueueAsync(testAction));
 
                 producerTasks.Add(producer);
             }
 
             Task.WaitAll(producerTasks.ToArray());
-            _pipeLine.CompleteProducing();
-            _pipeLine.PipeLineCompletion.Wait();
+            pipeLine.CompleteProducing();
+            pipeLine.PipeLineCompletion.Wait();
 
             _consumerMock.Verify(consumerMock => consumerMock.Consume(It.IsAny<Action>()), Times.Exactly(numberOfProducers));
         }

@@ -63,7 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProducerConsumerPipeLineTests.cs" />
+    <Compile Include="ProducerConsumerPipeLine\ProducerConsumerPipeLineTestCasesProvider.cs" />
+    <Compile Include="ProducerConsumerPipeLine\ProducerConsumerPipeLineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
