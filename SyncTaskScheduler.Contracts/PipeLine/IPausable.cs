@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SyncTaskScheduler.Contracts.Scheduler
+namespace SyncTaskScheduler.Contracts.PipeLine
 {
-    public interface ITaskScheduler<TPipeLineItem>
+    public interface IPausable
     {
-        
+        bool Pause();
+
+        bool Resume();
     }
 }

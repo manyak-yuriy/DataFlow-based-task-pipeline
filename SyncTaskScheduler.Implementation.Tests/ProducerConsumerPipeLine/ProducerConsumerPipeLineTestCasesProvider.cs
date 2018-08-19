@@ -17,7 +17,7 @@ namespace SyncTaskScheduler.Implementation.Tests.ProducerConsumerPipeLine
 
         private static readonly IEnumerable<int> MaximumPipelineCapacityTestCaseValues = new List<int>()
         {
-            1, 3, 5
+            1, 3, 12
         };
 
         // testActionDurationMs : numberOfProducers : maximumPipelineCapacity

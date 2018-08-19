@@ -2,7 +2,7 @@
 
 namespace SyncTaskScheduler.Contracts.PipeLine
 {
-    public interface IPipeLineProducer<in TPipeLineItem> : IPipeLine
+    public interface IPipeLineProducer<in TPipeLineItem> : IPipeLine<TPipeLineItem>
     {
         Task<bool> EnqueueAsync(TPipeLineItem item);
 

@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace SyncTaskScheduler.Contracts.PipeLine
 {
-    public interface IPipeLine
+    public interface IPipeLine<in TPipeLineItem>
     {
         void CompleteProducing();
 
         Task PipeLineCompletion { get; }
+
+        IPipeLineConsumer<TPipeLineItem> Consumer { get; }
     }
 }

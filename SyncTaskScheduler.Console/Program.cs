@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using NLog;
 using SyncTaskScheduler.Contracts.PipeLine;
 using SyncTaskScheduler.Contracts.PipeLine.Events;
+using SyncTaskScheduler.Contracts.Scheduler;
+using SyncTaskScheduler.Contracts.Tasks;
 using SyncTaskScheduler.Implementation.PipeLine;
 using SyncTaskScheduler.Implementation.PipeLine.Events;
+using SyncTaskScheduler.Implementation.Scheduler;
 using SyncTaskScheduler.Implementation.Tasks;
 using Console = System.Console;
 
@@ -16,61 +19,62 @@ namespace SyncTaskScheduler.ConsoleApp
     {
         private static ILogger _logger = LogManager.GetCurrentClassLogger();
 
+        private static ITaskSchedulerService<ITask> CreateTaskSchedulerService()
+        {
+            // Normally, these would be injected via DI framework.
+            var taskConsumer = new PausablePipeLineTaskConsumer();
+            var pipeLine = new ProducerConsumerPipeLine<ITask>(taskConsumer, 3);
+
+            var taskSchedulerService = new TaskSchedulerService<ITask>(pipeLine);
+
+            return taskSchedulerService;
+        }
+
+        // This is just a really triviale use case.
+        // See ProducerConsumerPipeLineTests to validate all requirements.
         static void Main(string[] args)
         {
-            var taskConsumer = new PipeLineTaskConsumer();
-            var pipeLine = new ProducerConsumerPipeLine<ActionBasedTask<int>>(taskConsumer, 10);
+            var taskSchedulerService = CreateTaskSchedulerService();
+            bool stopped = false;
 
             Console.CancelKeyPress += (o, e) =>
             {
                 e.Cancel = true;
-                pipeLine.CompleteProducing();
-            };
-            
-            var executeTasks = ExecuteTasksOneByOne(pipeLine, pipeLineEventsProvider);
-            GenerateTasksInParallel(pipeLine);
 
-            executeTasks.Wait();
+                Console.WriteLine("Stopping the scheduling service. Waiting for the queue exhaustion...");
+                taskSchedulerService.StopAsync().Wait();
+
+                stopped = true;
+                Console.WriteLine("Stopped the scheduling service.");
+            };
+
+            do
+            {
+                GenerateTasksInParallel(taskSchedulerService);
+
+                Console.WriteLine("Press any key to add new tasks. Press Ctrl+C to wait for the queue and exit.");
+                Console.ReadKey();
+            } while (!stopped);
         }
 
-        private static void GenerateTasksInParallel(IPipeLineProducer<ActionBasedTask<int>> pipeLineProducer)
+        private static void GenerateTasksInParallel(ITaskSchedulerService<ITask> taskSchedulerService)
         {
-            List<Task> tasks = new List<Task>();
-
-            for (int sleepTime = 3; sleepTime >= 0; sleepTime--)
+            for (int sleepTime = 5; sleepTime >= 0; sleepTime--)
             {
                 var time = sleepTime;
 
-                var task = Task.Factory.StartNew(() =>
+                Task.Factory.StartNew(() =>
                 {
-                    pipeLineProducer.EnqueueAsync(new ActionBasedTask<int>((int timeToSleepInSec) =>
+                    Console.WriteLine("Adding a task. Duration: {0}00 ms", time);
+
+                    taskSchedulerService.PushToStartAsync(new ActionBasedTask<int>((int timeToSleepInSec) =>
                     {
-                        Console.WriteLine("Start sleeping for {0} seconds", timeToSleepInSec);
-                        Thread.Sleep(1000 * timeToSleepInSec);
-                        Console.WriteLine("Woke up after {0} seconds", timeToSleepInSec);
+                        Console.WriteLine("Start sleeping for {0}00 ms", timeToSleepInSec);
+                        Thread.Sleep(100 * timeToSleepInSec);
+                        Console.WriteLine("Woke up after {0}00 ms", timeToSleepInSec);
                     }, time));
                 });
-
-                tasks.Add(task);
             }
-
-            //Task.WaitAll(tasks.ToArray());
-
-            //pipeLineProducer.StopPipeLine();
-        }
-
-        private static Task ExecuteTasksOneByOne(IPipeLineConsumer pipeLineConsumer, IPipeLineEventsSubscriber<ActionBasedTask<int>> pipeLineEventsProvider)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                pipeLineEventsProvider.NewElementAvailable += (sender, e) => e.Element.Execute();
-
-                Console.WriteLine("Started consuming tasks");
-
-                pipeLineConsumer.StartConsumeElementsAsync().Wait();
-
-                Console.WriteLine("Finished consuming tasks");
-            });
         }
     }
 }

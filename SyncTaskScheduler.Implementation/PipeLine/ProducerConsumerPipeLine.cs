@@ -37,6 +37,8 @@ namespace SyncTaskScheduler.Implementation.PipeLine
             _bufferBlock.LinkTo(_actionBlock, linkOptions);
         }
 
+        public IPipeLineConsumer<TPipeLineItem> Consumer => _pipeLineConsumer;
+
         public void CompleteProducing()
         {
             _bufferBlock.Complete();

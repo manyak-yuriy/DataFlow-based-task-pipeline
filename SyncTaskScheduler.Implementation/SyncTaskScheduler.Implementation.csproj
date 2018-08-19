@@ -51,9 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PipeLine\PausablePipeLineTaskConsumer.cs" />
     <Compile Include="PipeLine\Events\PipeLineEventsProvider.cs" />
     <Compile Include="PipeLine\PipeLineTaskConsumer.cs" />
-    <Compile Include="Scheduler\TaskScheduler.cs" />
+    <Compile Include="Scheduler\TaskSchedulerService.cs" />
     <Compile Include="Tasks\ActionBasedTask.cs" />
     <Compile Include="Tasks\FuncBasedTask.cs" />
     <Compile Include="PipeLine\ProducerConsumerPipeLine.cs" />

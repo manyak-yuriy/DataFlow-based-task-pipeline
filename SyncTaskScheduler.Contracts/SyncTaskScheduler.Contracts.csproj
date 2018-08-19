@@ -55,8 +55,10 @@
     <Compile Include="PipeLine\Events\IPipeLineEventsPublisher.cs" />
     <Compile Include="EventHandling\NewElementAvailableEventArgs.cs" />
     <Compile Include="EventHandling\EventHandlerSafe.cs" />
+    <Compile Include="PipeLine\IPausable.cs" />
+    <Compile Include="PipeLine\IPausablePipeLineConsumer.cs" />
     <Compile Include="PipeLine\IPipeLine.cs" />
-    <Compile Include="Scheduler\ITaskScheduler.cs" />
+    <Compile Include="Scheduler\ITaskSchedulerService.cs" />
     <Compile Include="Tasks\ITask.cs" />
     <Compile Include="PipeLine\IPipeLineConsumer.cs" />
     <Compile Include="PipeLine\IPipeLineProducer.cs" />

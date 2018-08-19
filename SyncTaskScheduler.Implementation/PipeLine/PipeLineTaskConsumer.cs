@@ -7,9 +7,9 @@ namespace SyncTaskScheduler.Implementation.PipeLine
 {
     public class PipeLineTaskConsumer : IPipeLineConsumer<ITask>
     {
-        public void Consume(ITask element)
+        public virtual void Consume(ITask item)
         {
-            element.Execute();
+            item.Execute();
         }
     }
 }

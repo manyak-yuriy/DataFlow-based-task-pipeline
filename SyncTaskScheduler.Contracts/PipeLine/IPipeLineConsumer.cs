@@ -5,6 +5,6 @@ namespace SyncTaskScheduler.Contracts.PipeLine
 {
     public interface IPipeLineConsumer<in TPipeLineItem>
     {
-        void Consume(TPipeLineItem element);
+        void Consume(TPipeLineItem item);
     }
 }
